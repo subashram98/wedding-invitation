@@ -1,0 +1,58 @@
+{
+  "couple": {
+    "person1": "Subash",
+    "person2": "Pavitha",
+    "tagline": "Together with their families",
+    "hashtag": "#SubashWedsPavitha"
+  },
+  "wedding": {
+    "date": "2026-05-29T06:00:00",
+    "dateDisplay": "Friday, May 29, 2026",
+    "venue": "AARNA Mahal, Chennai",
+    "rsvpDeadline": "May 15, 2026",
+    "rsvpEndpoint": "https://script.google.com/macros/s/AKfycbxJ7AW_q1-sGb6lvLAivu0DfOMb87Z-axYd1tzZFnpsWkXY0FD6LqIL_-6Kgd_kQvQi0w/exec",
+    "venueMapUrl": "https://maps.app.goo.gl/gF5nuw2Ef2P9CVdJA"
+  },
+  "events": [
+    {
+      "name": "Reception",
+      "date": "Thursday, May 28, 2026",
+      "time": "6:00 PM onwards",
+      "venue": "AARNA Mahal, Chennai",
+      "icon": "🥂",
+      "description": "An evening of celebration, blessings, and joy with family and friends."
+    },
+    {
+      "name": "Wedding Ceremony",
+      "date": "Friday, May 29, 2026",
+      "time": "6:00 - 7:30 AM",
+      "venue": "AARNA Mahal, Chennai",
+      "icon": "💍",
+      "description": "The sacred moment we begin our journey together. Join us as we tie the knot."
+    }
+  ],
+  "story": [
+    { "year": 2016, "text": "First met in college, first year", "image": "/images/2016.png", "speed": "fast" },
+    { "year": 2017, "text": "Campus life, chai breaks, inside jokes", "image": "/images/2017.png", "speed": "fast" },
+    { "year": 2018, "text": "Late night calls that never ended", "image": "/images/2018.png", "speed": "fast" },
+    { "year": 2019, "text": "Campus placements. Both got offers.", "image": "/images/2019.png", "speed": "fast" },
+    { "year": 2020, "text": "Graduated. New chapter. Same city. Same us.", "image": "/images/2020.png", "speed": "medium" },
+    { "year": 2021, "text": "Through thick and thin, always us", "image": "https://images.unsplash.com/photo-1522098543979-ffc7f79a56c4?w=1200&h=800&fit=crop", "speed": "medium" },
+    { "year": 2022, "text": "Building a life, one day at a time", "image": "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=1200&h=800&fit=crop", "speed": "medium" },
+    { "year": 2023, "text": "Everything started falling into place", "image": "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?w=1200&h=800&fit=crop", "speed": "slow" },
+    { "year": 2024, "text": "We just knew", "image": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&h=800&fit=crop", "speed": "slow" },
+    { "year": 2025, "text": "Families met. Blessings poured in.", "image": "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=1200&h=800&fit=crop", "speed": "slower" },
+    { "year": 2026, "text": "And here we are", "image": "https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop", "speed": "slowest" }
+  ],
+  "gallery": [
+    { "src": "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop", "alt": "Photo 1" },
+    { "src": "https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?w=600&h=400&fit=crop", "alt": "Photo 2" },
+    { "src": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&h=400&fit=crop", "alt": "Photo 3" },
+    { "src": "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600&h=400&fit=crop", "alt": "Photo 4" },
+    { "src": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&h=400&fit=crop", "alt": "Photo 5" },
+    { "src": "https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=600&h=400&fit=crop", "alt": "Photo 6" }
+  ],
+  "footer": {
+    "note": "Made with ♥ by the Groom"
+  }
+}
