@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useConfig } from '../useConfig';
 
-export default function OurStory() {
+export default function OurStory({ scrollContainer }) {
   const config = useConfig();
   const years = config.story;
   const containerRef = useRef();
@@ -18,7 +18,16 @@ export default function OurStory() {
 
   useEffect(() => {
     let ticking = false;
-    let lastY = window.scrollY;
+
+    // Determine scroll target: either the passed container or window
+    const getScrollElement = () => {
+      if (scrollContainer && scrollContainer.current) {
+        // The scrollable element is .curtain-content inside the overlay
+        const content = scrollContainer.current.querySelector('.curtain-content');
+        return content || scrollContainer.current;
+      }
+      return null;
+    };
 
     const handleScroll = () => {
       if (ticking) return;
@@ -27,22 +36,27 @@ export default function OurStory() {
         const el = containerRef.current;
         if (!el) { ticking = false; return; }
 
-        const now = window.scrollY;
-        const goingDown = now > lastY;
-        lastY = now;
+        const scrollEl = getScrollElement();
 
-        const rect = el.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top > window.innerHeight) {
-          ticking = false;
-          return;
+        let scrollTop, viewportHeight;
+        if (scrollEl) {
+          scrollTop = scrollEl.scrollTop;
+          viewportHeight = scrollEl.clientHeight;
+        } else {
+          scrollTop = window.scrollY;
+          viewportHeight = window.innerHeight;
         }
 
-        const scrollableHeight = el.offsetHeight - window.innerHeight;
+        // Calculate how far we've scrolled through the story container
+        const containerTop = el.offsetTop;
+        const containerHeight = el.offsetHeight;
+        const scrollableHeight = containerHeight - viewportHeight;
+
         if (scrollableHeight <= 0) { ticking = false; return; }
-        const scrolled = Math.max(0, -rect.top);
+
+        const scrolled = Math.max(0, scrollTop - containerTop);
         const progress = Math.min(1, scrolled / scrollableHeight);
 
-        // Update in both directions for smooth experience
         for (let i = breakpoints.length - 1; i >= 0; i--) {
           if (progress >= breakpoints[i].start) {
             setActiveIndex(i);
@@ -56,10 +70,14 @@ export default function OurStory() {
         ticking = false;
       });
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    const scrollEl = getScrollElement();
+    const target = scrollEl || window;
+
+    target.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [breakpoints]);
+    return () => target.removeEventListener('scroll', handleScroll);
+  }, [breakpoints, scrollContainer]);
 
   const active = years[activeIndex];
 
@@ -103,14 +121,6 @@ export default function OurStory() {
             </div>
           )}
         </div>
-
-        <a href="#events-section" className="story-skip-btn" aria-label="Skip to events"
-          onClick={(e) => { e.preventDefault(); document.getElementById('events-section')?.scrollIntoView({ behavior: 'smooth' }); }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M4 2l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M4 8l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </a>
       </div>
     </section>
   );

@@ -1,0 +1,69 @@
+/* ===== Countdown — Dark ===== */
+.countdown {
+  padding: 5rem 2rem;
+  background: linear-gradient(180deg, var(--color-bg-dark) 0%, #0e1428 50%, var(--color-bg-dark) 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.countdown-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(184,134,11,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(184,134,11,0.04) 0%, transparent 50%);
+  animation: patternShift 15s ease-in-out infinite;
+}
+
+@keyframes patternShift {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.countdown-anim {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.countdown.anim-visible .countdown-anim { opacity: 1; transform: translateY(0); }
+.countdown.anim-visible .countdown-anim-1 { transition-delay: 0.1s; }
+.countdown.anim-visible .countdown-anim-2 { transition-delay: 0.2s; }
+.countdown.anim-visible .countdown-anim-3 { transition-delay: 0.4s; }
+.countdown.anim-visible .countdown-anim-4 { transition-delay: 0.55s; }
+.countdown.anim-visible .countdown-anim-5 { transition-delay: 0.7s; }
+.countdown.anim-visible .countdown-anim-6 { transition-delay: 0.85s; }
+
+.countdown-grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.countdown-number {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 600;
+  color: var(--color-white);
+  line-height: 1;
+}
+
+.countdown-label {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+  margin-top: 0.5rem;
+}
+

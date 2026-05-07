@@ -1,0 +1,322 @@
+/* ===== Story Reveal — Trigger Section ===== */
+.story-trigger-section {
+  padding: 5rem 2rem;
+  background: var(--color-bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.story-trigger-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(184,134,11,0.04) 0%, transparent 70%);
+}
+
+.story-trigger-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.story-trigger-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-gold-light);
+  margin-bottom: 0.75rem;
+  opacity: 0.7;
+}
+
+.story-trigger-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  font-weight: 400;
+  color: var(--color-white);
+  margin-bottom: 0.5rem;
+}
+
+.story-trigger-subtitle {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+  font-style: italic;
+  margin-bottom: 2.5rem;
+}
+
+/* ===== Wax Seal — Uses actual image ===== */
+.wax-seal-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.3s ease;
+}
+.wax-seal-btn:hover { transform: scale(1.08); }
+.wax-seal-btn:active { transform: scale(0.95); }
+
+/* Heartbeat pulse — triggered by fairy tap timing */
+.wax-seal-bounce {
+  animation: sealTap 4s ease-in-out infinite;
+}
+
+@keyframes sealTap {
+  0%, 100% { transform: scale(1); }
+  /* Fairy taps at ~50% of orbit */
+  48% { transform: scale(1); }
+  52% { transform: scale(1.1); }
+  56% { transform: scale(0.97); }
+  60% { transform: scale(1.05); }
+  65% { transform: scale(1); }
+}
+
+
+/* Seal container */
+.wax-seal-container {
+  display: block;
+}
+
+/* ===== Curtain Overlay ===== */
+.curtain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  perspective: 1200px;
+}
+
+/* ===== Curtain Panels ===== */
+.curtain-panel {
+  position: absolute;
+  top: -2%;
+  bottom: -2%;
+  width: 50%;
+  z-index: 10;
+  will-change: transform;
+  transform: translate3d(0, 0, 0) rotateY(0deg);
+  transform-origin: left center;
+  /* Smooth GPU-composited transition */
+  transition: transform 2.8s cubic-bezier(0.16, 1, 0.3, 1);
+  perspective: 1200px;
+}
+
+.curtain-left {
+  left: 0;
+  transform-origin: left center;
+}
+.curtain-right {
+  right: 0;
+  transform-origin: right center;
+}
+
+/* Open state — 3D rotation like fabric swinging on a curtain rod */
+.curtain-overlay.is-open .curtain-left {
+  transform: translate3d(-30%, 0, 0) rotateY(-75deg);
+}
+.curtain-overlay.is-open .curtain-right {
+  transform: translate3d(30%, 0, 0) rotateY(75deg);
+}
+
+/* ===== Red Velvet Fabric ===== */
+.curtain-fabric {
+  position: absolute;
+  inset: 0;
+  /* Rich red with vertical fold variation baked into one gradient */
+  background:
+    /* Vertical fold highlights/shadows */
+    linear-gradient(90deg,
+      rgba(0,0,0,0.2) 0%, rgba(90,20,20,0.9) 5%,
+      rgba(60,12,12,1) 12%, rgba(90,20,20,0.95) 20%,
+      rgba(50,10,10,1) 30%, rgba(80,18,18,0.95) 38%,
+      rgba(60,12,12,1) 48%, rgba(90,20,20,0.95) 55%,
+      rgba(50,10,10,1) 65%, rgba(80,18,18,0.95) 75%,
+      rgba(60,12,12,1) 85%, rgba(90,20,20,0.9) 95%,
+      rgba(0,0,0,0.2) 100%
+    ),
+    /* Base color */
+    linear-gradient(180deg, #3a0c0c 0%, #4a1010 50%, #3a0c0c 100%);
+}
+
+/* Ripple wave overlay — lightweight GPU-composited illusion of fabric movement */
+.curtain-fabric::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,200,200,0.04) 4%,
+    transparent 8%,
+    rgba(0,0,0,0.08) 12%,
+    transparent 16%
+  );
+  opacity: 0;
+  will-change: opacity, transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* When opening, animate the ripple overlay */
+.curtain-overlay.is-open .curtain-fabric::before {
+  animation: fabricRipple 2.4s ease-out;
+}
+
+@keyframes fabricRipple {
+  0%   { opacity: 1; transform: translate3d(0%, 0, 0); }
+  20%  { opacity: 0.9; transform: translate3d(8%, 0, 0); }
+  40%  { opacity: 0.7; transform: translate3d(-5%, 0, 0); }
+  60%  { opacity: 0.5; transform: translate3d(4%, 0, 0); }
+  80%  { opacity: 0.2; transform: translate3d(-2%, 0, 0); }
+  100% { opacity: 0; transform: translate3d(0%, 0, 0); }
+}
+
+/* Also add a swinging shadow at the inner edge for depth */
+.curtain-fabric::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  will-change: opacity;
+  opacity: 0.5;
+}
+
+.curtain-left .curtain-fabric::after {
+  right: 0;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.4));
+}
+.curtain-right .curtain-fabric::after {
+  left: 0;
+  background: linear-gradient(270deg, transparent, rgba(0,0,0,0.4));
+}
+
+/* Animate edge shadow during open — simulates depth as fabric swings */
+.curtain-overlay.is-open .curtain-left .curtain-fabric::after {
+  animation: edgeShadowLeft 2.4s ease-out;
+}
+.curtain-overlay.is-open .curtain-right .curtain-fabric::after {
+  animation: edgeShadowRight 2.4s ease-out;
+}
+
+@keyframes edgeShadowLeft {
+  0%   { opacity: 0.5; width: 60px; }
+  15%  { opacity: 0.9; width: 90px; }
+  30%  { opacity: 0.4; width: 40px; }
+  50%  { opacity: 0.8; width: 80px; }
+  70%  { opacity: 0.3; width: 50px; }
+  100% { opacity: 0.5; width: 60px; }
+}
+
+@keyframes edgeShadowRight {
+  0%   { opacity: 0.5; width: 60px; }
+  15%  { opacity: 0.9; width: 90px; }
+  30%  { opacity: 0.4; width: 40px; }
+  50%  { opacity: 0.8; width: 80px; }
+  70%  { opacity: 0.3; width: 50px; }
+  100% { opacity: 0.5; width: 60px; }
+}
+
+/* Gold trim at center seam */
+.curtain-left::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg,
+    var(--color-gold), rgba(184,134,11,0.3) 10%,
+    var(--color-gold) 20%, rgba(184,134,11,0.3) 30%,
+    var(--color-gold) 40%, rgba(184,134,11,0.3) 50%,
+    var(--color-gold) 60%, rgba(184,134,11,0.3) 70%,
+    var(--color-gold) 80%, rgba(184,134,11,0.3) 90%, var(--color-gold)
+  );
+  z-index: 5;
+  box-shadow: 0 0 8px rgba(184,134,11,0.4);
+}
+.curtain-right::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg,
+    var(--color-gold), rgba(184,134,11,0.3) 10%,
+    var(--color-gold) 20%, rgba(184,134,11,0.3) 30%,
+    var(--color-gold) 40%, rgba(184,134,11,0.3) 50%,
+    var(--color-gold) 60%, rgba(184,134,11,0.3) 70%,
+    var(--color-gold) 80%, rgba(184,134,11,0.3) 90%, var(--color-gold)
+  );
+  z-index: 5;
+  box-shadow: 0 0 8px rgba(184,134,11,0.4);
+}
+
+/* ===== Heart Seal — Centered at Seam ===== */
+.curtain-seal {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.curtain-seal-hidden {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+/* ===== Content — visible behind curtains ===== */
+.curtain-content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--color-bg-dark);
+  -webkit-overflow-scrolling: touch;
+  pointer-events: none;
+}
+
+.curtain-content.is-visible {
+  pointer-events: auto;
+}
+
+/* Close button */
+.curtain-close-btn {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10001;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: rgba(10, 10, 26, 0.9);
+  color: var(--color-gold-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.curtain-content.is-visible .curtain-close-btn {
+  opacity: 1;
+}
+
+.curtain-close-btn:hover {
+  background: rgba(184, 134, 11, 0.15);
+  border-color: var(--color-gold);
+  color: var(--color-white);
+  transform: rotate(90deg);
+}

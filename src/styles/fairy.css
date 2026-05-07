@@ -1,0 +1,290 @@
+/* ===== Fairy Companion ===== */
+.fairy-companion {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9000;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.fairy-flipped .fairy-body {
+  transform: scaleX(-1);
+}
+
+.fairy-body {
+  filter: drop-shadow(0 2px 8px rgba(212, 168, 67, 0.3));
+}
+
+/* ===== Wings — always flapping ===== */
+.fairy-wing-l, .fairy-wing-l-sm {
+  transform-origin: 50px 50px;
+  animation: wL 0.3s ease-in-out infinite alternate;
+}
+.fairy-wing-r, .fairy-wing-r-sm {
+  transform-origin: 50px 50px;
+  animation: wR 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes wL {
+  from { transform: rotate(-3deg) scaleX(1); }
+  to { transform: rotate(8deg) scaleX(0.65); }
+}
+@keyframes wR {
+  from { transform: rotate(3deg) scaleX(1); }
+  to { transform: rotate(-8deg) scaleX(0.65); }
+}
+
+/* Fast wings when flying */
+.fairy-pose-fly .fairy-wing-l,
+.fairy-pose-fly .fairy-wing-l-sm { animation-duration: 0.1s; }
+.fairy-pose-fly .fairy-wing-r,
+.fairy-pose-fly .fairy-wing-r-sm { animation-duration: 0.1s; }
+
+/* ===== Hair flow ===== */
+.fairy-hair-flow-1 {
+  animation: hairFlow 3.5s ease-in-out infinite;
+  transform-origin: top;
+}
+.fairy-hair-flow-2 {
+  animation: hairFlow 3.5s ease-in-out 0.5s infinite;
+  transform-origin: top;
+}
+
+@keyframes hairFlow {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  50% { transform: rotate(2deg) translateX(1px); }
+}
+
+/* Faster hair movement when flying */
+.fairy-pose-fly .fairy-hair-flow-1 { animation-duration: 1s; }
+.fairy-pose-fly .fairy-hair-flow-2 { animation-duration: 1s; }
+
+/* ===== Aura pulse ===== */
+.fairy-aura {
+  animation: aura 2.5s ease-in-out infinite;
+}
+@keyframes aura {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+/* ===== Wand glow — only opacity, no transform ===== */
+.fairy-wand-glow {
+  animation: wandGlow 1.8s ease-in-out infinite;
+}
+@keyframes wandGlow {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.5; }
+}
+
+/* ===== POSE: Idle — gentle float, blink ===== */
+.fairy-pose-idle {
+  animation: poseIdle 3.5s ease-in-out infinite;
+}
+@keyframes poseIdle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.fairy-pose-idle .fairy-eyes {
+  animation: blink 4s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+/* ===== POSE: Fly — tilted, fast wings ===== */
+.fairy-pose-fly {
+  animation: poseFly 0.4s ease-out forwards;
+}
+@keyframes poseFly {
+  to { transform: rotate(-6deg); }
+}
+
+/* ===== POSE: Peek — shy, tilted, peeking from edge ===== */
+.fairy-pose-peek {
+  animation: posePeek 1.5s ease-in-out infinite alternate;
+}
+@keyframes posePeek {
+  0% { transform: translateX(-5px) rotate(-5deg); }
+  100% { transform: translateX(5px) rotate(5deg); }
+}
+
+/* ===== POSE: Point — arm extended toward target ===== */
+.fairy-pose-point .fairy-arm-r {
+  transform-origin: 58px 54px;
+  animation: armPoint 1.2s ease-in-out infinite;
+}
+@keyframes armPoint {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-12deg); }
+}
+
+.fairy-pose-point {
+  animation: posePoint 1.2s ease-in-out infinite;
+}
+@keyframes posePoint {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-3px); }
+}
+
+/* ===== POSE: Cast — wand strike with sparkle burst ===== */
+.fairy-pose-cast .fairy-arm-r {
+  transform-origin: 58px 54px;
+  animation: armCast 1s ease-in-out infinite;
+}
+@keyframes armCast {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-20deg); }
+  45% { transform: rotate(8deg); }
+  65% { transform: rotate(-5deg); }
+}
+
+/* Only animate opacity/size on glow — no transform (would detach from arm) */
+.fairy-pose-cast .fairy-wand-glow {
+  animation: castGlow 1s ease-out infinite;
+}
+@keyframes castGlow {
+  0% { opacity: 0.2; }
+  45% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* NO transform on star — it moves with the arm naturally */
+.fairy-pose-cast .fairy-star {
+  animation: none;
+}
+
+.fairy-pose-cast {
+  animation: castBounce 1s ease-in-out infinite;
+}
+@keyframes castBounce {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-5px) rotate(-3deg); }
+  50% { transform: translateY(2px); }
+}
+
+/* ===== POSE: Tap — quick wand tap ===== */
+.fairy-pose-tap .fairy-arm-r {
+  transform-origin: 58px 54px;
+  animation: armTap 1.4s ease-in-out infinite;
+}
+@keyframes armTap {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(-15deg); }
+  45% { transform: rotate(3deg); }
+  55% { transform: rotate(-8deg); }
+}
+
+/* Only opacity — no transform on children */
+.fairy-pose-tap .fairy-wand-glow {
+  animation: tapGlow 1.4s ease-out infinite;
+}
+@keyframes tapGlow {
+  0%, 30% { opacity: 0; }
+  45% { opacity: 1; }
+  60% { opacity: 0.4; }
+  100% { opacity: 0; }
+}
+
+.fairy-pose-tap {
+  animation: tapNudge 1.4s ease-in-out infinite;
+}
+@keyframes tapNudge {
+  0%, 100% { transform: translateX(0); }
+  40% { transform: translateX(-4px); }
+  50% { transform: translateX(2px); }
+}
+
+/* ===== Sparkle Trail ===== */
+.fairy-sparkle-trail {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  pointer-events: none;
+}
+
+.fairy-sp {
+  position: absolute;
+  color: var(--color-gold-light);
+  font-size: 7px;
+  opacity: 0;
+}
+
+.fairy-sp.sp1 { animation: spDrift 2.2s ease-out infinite; }
+.fairy-sp.sp2 { animation: spDrift 2.2s ease-out 0.6s infinite; }
+.fairy-sp.sp3 { animation: spDrift 2.2s ease-out 1.2s infinite; }
+
+@keyframes spDrift {
+  0% { opacity: 0.9; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-8px, 14px) scale(0.2); }
+}
+
+/* No sparkles when idle/peeking */
+.fairy-pose-idle ~ .fairy-sparkle-trail .fairy-sp,
+.fairy-pose-peek ~ .fairy-sparkle-trail .fairy-sp {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+/* ===== POSE: Wave — arm raised, waving ===== */
+.fairy-pose-wave .fairy-arm-l {
+  transform-origin: 42px 54px;
+  animation: armWave 0.6s ease-in-out infinite;
+}
+@keyframes armWave {
+  0%, 100% { transform: rotate(-20deg); }
+  50% { transform: rotate(10deg); }
+}
+
+.fairy-pose-wave {
+  animation: waveBody 0.6s ease-in-out infinite;
+}
+@keyframes waveBody {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+/* ===== POSE: Twirl — full spin ===== */
+.fairy-pose-twirl {
+  animation: twirl 1s ease-in-out;
+}
+@keyframes twirl {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(360deg) scale(1.1); }
+  100% { transform: rotate(720deg) scale(1); }
+}
+
+.fairy-pose-twirl .fairy-wing-l,
+.fairy-pose-twirl .fairy-wing-l-sm { animation-duration: 0.08s; }
+.fairy-pose-twirl .fairy-wing-r,
+.fairy-pose-twirl .fairy-wing-r-sm { animation-duration: 0.08s; }
+
+/* ===== POSE: Giggle — body shakes, hand to mouth ===== */
+.fairy-pose-giggle {
+  animation: giggleShake 0.3s ease-in-out infinite;
+}
+@keyframes giggleShake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-2px) rotate(-2deg); }
+  75% { transform: translateX(2px) rotate(2deg); }
+}
+
+.fairy-pose-giggle .fairy-arm-l {
+  transform-origin: 42px 54px;
+  animation: handToMouth 0.5s ease-out forwards;
+}
+@keyframes handToMouth {
+  to { transform: rotate(25deg); }
+}
+
+.fairy-pose-giggle .fairy-mouth {
+  animation: giggleMouth 0.3s ease-in-out infinite;
+}
+@keyframes giggleMouth {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.3) scaleX(1.1); }
+}

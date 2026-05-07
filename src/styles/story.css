@@ -1,0 +1,226 @@
+/* ===== Our Story — Sticky Scroll Timeline ===== */
+.story-scroll-container {
+  position: relative;
+  height: 600vh;
+}
+
+.story-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: #1a1a2e;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.story-bg-active { opacity: 1; }
+
+.story-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1;
+}
+
+.story-progress-track {
+  position: absolute;
+  left: 2.5rem;
+  top: 15%;
+  bottom: 15%;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+.story-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--color-gold);
+  transition: none;
+  box-shadow: 0 0 8px rgba(184, 134, 11, 0.5);
+}
+
+.story-progress-dot {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: none;
+}
+
+.story-progress-dot.active { background: var(--color-gold); }
+
+.story-progress-dot.current {
+  background: var(--color-gold);
+  box-shadow: 0 0 12px rgba(184, 134, 11, 0.6);
+  transform: translateX(-50%) scale(1.5);
+}
+
+.story-progress-year {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+.story-progress-dot.current .story-progress-year { color: var(--color-gold-light); }
+
+.story-content-center {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+}
+
+.story-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-gold-light);
+  margin-bottom: 1.5rem;
+  opacity: 0.7;
+}
+
+.story-year-display { margin-bottom: 1rem; overflow: hidden; }
+
+.story-year-number {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 700;
+  color: var(--color-white);
+  line-height: 1;
+  display: block;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+  transition: opacity 0.25s ease;
+}
+
+.story-year-text {
+  font-family: var(--font-body);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.85);
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 400px;
+  margin: 0 auto;
+  transition: opacity 0.25s ease;
+}
+
+.story-final-flourish {
+  margin-top: 1.5rem;
+  animation: flourishIn 1s ease forwards;
+}
+
+.story-heart {
+  font-size: 2rem;
+  color: var(--color-gold);
+  display: inline-block;
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.25); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+}
+
+@keyframes flourishIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.story-swipe-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--color-gold-light);
+  opacity: 0.6;
+}
+
+.swipe-arrow {
+  font-size: 1rem;
+  animation: arrowBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.story-skip-btn {
+  position: absolute;
+  bottom: 2rem;
+  left: 2.5rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  text-decoration: none;
+  color: var(--color-gold-light);
+  border: 1px solid rgba(184, 134, 11, 0.25);
+  border-radius: 50%;
+  background: rgba(10, 10, 26, 0.4);
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: skipFadeIn 0.5s ease 1.5s forwards, skipBounce 2s ease-in-out 2s infinite;
+}
+
+.story-skip-btn:hover {
+  background: rgba(184, 134, 11, 0.15);
+  border-color: var(--color-gold);
+  color: var(--color-white);
+}
+
+@keyframes skipFadeIn {
+  to { opacity: 0.7; }
+}
+
+@keyframes skipBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+@media (max-width: 768px) {
+  .story-progress-track { left: 1rem; }
+  .story-progress-year { display: none; }
+  .story-year-number { font-size: clamp(3rem, 15vw, 5rem); }
+}
+

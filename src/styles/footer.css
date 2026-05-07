@@ -1,0 +1,52 @@
+/* ===== Footer — Dark ===== */
+.footer {
+  padding: 4rem 2rem;
+  background: linear-gradient(180deg, var(--color-bg-dark) 0%, #060610 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+.footer-names {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--color-white);
+  margin-bottom: 0.25rem;
+}
+
+.footer-date {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--color-text-light);
+  margin-bottom: 1rem;
+}
+
+.footer-hashtag {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--color-gold);
+  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.footer-directions {
+  margin-bottom: 2rem;
+}
+
+.footer-note {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
