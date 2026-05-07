@@ -8,6 +8,20 @@
   will-change: transform;
 }
 
+/* Element bounce when fairy taps it */
+.fairy-tapped {
+  animation: fairyTapBounce 0.5s ease-out !important;
+}
+
+@keyframes fairyTapBounce {
+  0% { transform: scale(1); }
+  20% { transform: scale(0.92); }
+  40% { transform: scale(1.08); }
+  60% { transform: scale(0.97); }
+  80% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
 .fairy-flipped .fairy-body {
   transform: scaleX(-1);
 }

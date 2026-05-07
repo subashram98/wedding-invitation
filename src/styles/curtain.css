@@ -65,19 +65,17 @@
 .wax-seal-btn:hover { transform: scale(1.08); }
 .wax-seal-btn:active { transform: scale(0.95); }
 
-/* Heartbeat pulse — triggered by fairy tap timing */
+/* Heartbeat pulse — slower, more noticeable scale */
 .wax-seal-bounce {
-  animation: sealTap 4s ease-in-out infinite;
+  animation: sealTap 2.2s ease-in-out infinite;
 }
 
 @keyframes sealTap {
   0%, 100% { transform: scale(1); }
-  /* Fairy taps at ~50% of orbit */
-  48% { transform: scale(1); }
-  52% { transform: scale(1.1); }
-  56% { transform: scale(0.97); }
-  60% { transform: scale(1.05); }
-  65% { transform: scale(1); }
+  18% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  54% { transform: scale(1); }
 }
 
 

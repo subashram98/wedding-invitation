@@ -2,21 +2,25 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import FairyCharacter from './FairyCharacter';
 
 /**
- * Fairy behavior brain — v3
+ * Fairy behavior — autonomous, section-aware.
  * 
- * Fixes:
- * - Proper peek on load (only head visible from edge)
- * - Positions on correct side so wand faces target
- * - Doesn't get stuck — always frees after action
- * - Random hide & peek during idle
- * - Playful gestures: wave, twirl, giggle
+ * The fairy moves on its own between visible interactive elements.
+ * It does NOT follow the cursor. Instead it:
+ * 1. Peeks in on page load
+ * 2. Detects which interactive elements are in the viewport
+ * 3. Flies to the nearest one, performs an action (cast/tap/point)
+ * 4. After a few seconds, moves to the next visible element
+ * 5. If no elements visible, floats idle or does playful gestures
+ * 6. Randomly hides and peeks for personality
  */
 
-const GUIDE_TARGETS = [
-  { selector: '.wax-seal-btn', action: 'cast' },
-  { selector: '.directions-btn', action: 'tap' },
-  { selector: '.rsvp-submit', action: 'tap' },
-  { selector: '.rsvp .form-group input', action: 'point' },
+const TARGETS = [
+  { selector: '.wax-seal-btn', action: 'cast', priority: 1, bounce: false },
+  { selector: '.hero-cta', action: 'tap', priority: 6, bounce: true },
+  { selector: '.directions-btn', action: 'tap', priority: 2, bounce: true },
+  { selector: '#rsvp-name', action: 'point', priority: 3, bounce: true, emptyOnly: true },
+  { selector: '#rsvp-message', action: 'point', priority: 4, bounce: true, emptyOnly: true },
+  { selector: '.rsvp-submit', action: 'tap', priority: 5, bounce: true },
 ];
 
 export default function Fairy() {
@@ -24,15 +28,14 @@ export default function Fairy() {
   const pos = useRef({ x: -30, y: window.innerHeight * 0.3 });
   const target = useRef({ x: -30, y: window.innerHeight * 0.3 });
   const vel = useRef({ x: 0, y: 0 });
-  const lastInteraction = useRef(Date.now());
-  const lastAction = useRef(0);
   const frame = useRef(null);
   const mood = useRef('hidden');
   const timers = useRef([]);
+  const currentTargetSelector = useRef(null);
+  const lastActionTime = useRef(0);
 
   const [pose, setPose] = useState('peek');
   const [flipped, setFlipped] = useState(false);
-  const [visible, setVisible] = useState(true);
 
   const addTimer = useCallback((fn, ms) => {
     const id = setTimeout(fn, ms);
@@ -40,196 +43,230 @@ export default function Fairy() {
     return id;
   }, []);
 
-  // === ENTRANCE: Hide → peek head → wave → fly in ===
+  const clearAllTimers = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  }, []);
+
+  // === ENTRANCE: peek from left edge, wave, fly in ===
   useEffect(() => {
-    // Start hidden off left edge — only head peeking
-    pos.current = { x: -15, y: window.innerHeight * 0.3 };
-    target.current = { x: 10, y: window.innerHeight * 0.3 };
+    pos.current = { x: -20, y: window.innerHeight * 0.3 };
+    target.current = { x: 15, y: window.innerHeight * 0.3 };
     mood.current = 'peeking';
     setPose('peek');
 
-    // Peek more
     addTimer(() => {
-      target.current = { x: 25, y: window.innerHeight * 0.3 };
-    }, 1200);
-
-    // Wave at user
-    addTimer(() => {
+      target.current = { x: 30, y: window.innerHeight * 0.3 };
       setPose('wave');
-    }, 2200);
+    }, 1800);
 
-    // Fly in
     addTimer(() => {
       mood.current = 'fly';
       setPose('fly');
       target.current = { x: window.innerWidth * 0.75, y: window.innerHeight * 0.25 };
-    }, 3500);
+    }, 3200);
 
-    // Settle
     addTimer(() => {
       mood.current = 'idle';
       setPose('idle');
-    }, 5000);
+      // Start the autonomous behavior loop
+      startBehaviorLoop();
+    }, 4800);
 
-    return () => timers.current.forEach(clearTimeout);
-  }, [addTimer]);
+    return () => clearAllTimers();
+  }, [addTimer, clearAllTimers]);
 
-  // === CURSOR TRACKING ===
-  useEffect(() => {
-    const onMove = (e) => {
-      const x = e.clientX ?? e.touches?.[0]?.clientX;
-      const y = e.clientY ?? e.touches?.[0]?.clientY;
-      if (x == null) return;
-      target.current = { x, y };
-      lastInteraction.current = Date.now();
-      if (mood.current === 'idle' || mood.current === 'peeking' || mood.current === 'hidden') {
-        mood.current = 'fly';
-        setPose('fly');
+  // === MAIN BEHAVIOR LOOP — hyperactive fairy ===
+  function startBehaviorLoop() {
+    let actionCount = 0;
+
+    const loop = setInterval(() => {
+      if (mood.current === 'acting' || mood.current === 'guiding' || mood.current === 'hiding' || mood.current === 'peeking') return;
+
+      actionCount++;
+
+      // Alternate: guide → play → guide → play
+      if (actionCount % 2 === 0) {
+        doPlayfulGesture();
+      } else {
+        const visibleTargets = getVisibleTargets();
+        if (visibleTargets.length > 0) {
+          const next = visibleTargets.find(t => t.uniqueKey !== currentTargetSelector.current)
+            || visibleTargets[0];
+          flyToElement(next);
+        } else {
+          doPlayfulGesture();
+        }
       }
+    }, 1800);
+
+    timers.current.push(loop);
+  }
+
+  // === React to scroll — float alongside, guide only when stopped ===
+  useEffect(() => {
+    let scrollTimeout;
+    let lastScrollY = window.scrollY;
+
+    const onScroll = () => {
+      const scrollDelta = window.scrollY - lastScrollY;
+      lastScrollY = window.scrollY;
+
+      // During scroll: fairy drifts in scroll direction (stays in viewport)
+      if (mood.current === 'idle' || mood.current === 'fly') {
+        // Nudge fairy position to follow scroll naturally
+        target.current = {
+          x: pos.current.x,
+          y: Math.max(60, Math.min(window.innerHeight - 60, pos.current.y + scrollDelta * 0.1)),
+        };
+        // Switch to fly pose while scrolling
+        if (mood.current === 'idle') {
+          mood.current = 'fly';
+          setPose('fly');
+        }
+      }
+
+      // Glance at important elements that scroll into view
+      const visibleTargets = getVisibleTargets();
+      if (visibleTargets.length > 0) {
+        const nearest = visibleTargets[0];
+        // Flip to face the element (glance)
+        setFlipped(nearest.rect.left + nearest.rect.width / 2 < pos.current.x);
+      }
+
+      // Reset idle timer — guide almost immediately after scroll stops
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        mood.current = 'idle';
+        setPose('idle');
+
+        // Guide right away
+        if (Date.now() - lastActionTime.current > 2000) {
+          const targets = getVisibleTargets();
+          if (targets.length > 0) {
+            const next = targets.find(t => t.uniqueKey !== currentTargetSelector.current) || targets[0];
+            flyToElement(next);
+          }
+        }
+      }, 600);
     };
-    window.addEventListener('mousemove', onMove, { passive: true });
-    window.addEventListener('touchmove', onMove, { passive: true });
+
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(scrollTimeout);
     };
   }, []);
 
-  // === SCROLL: guide to visible elements ===
-  useEffect(() => {
-    const onScroll = () => {
-      lastInteraction.current = Date.now();
-      if (mood.current === 'fly') {
-        // On scroll, check for targets after a brief delay
-        addTimer(() => {
-          if (mood.current === 'fly' || mood.current === 'idle') {
-            const found = findTarget();
-            if (found && Date.now() - lastAction.current > 6000) {
-              guideToElement(found);
-            }
-          }
-        }, 1500);
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [addTimer]);
-
-  // === STATE MACHINE: idle → play/peek/guide ===
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - lastInteraction.current;
-      const sinceAction = Date.now() - lastAction.current;
-
-      // Fly → idle
-      if (mood.current === 'fly' && elapsed > 2500) {
-        mood.current = 'idle';
-        setPose('idle');
-      }
-
-      // Idle behaviors
-      if (mood.current === 'idle' && elapsed > 4000) {
-        const roll = Math.random();
-
-        // Try to guide to visible element
-        if (sinceAction > 8000) {
-          const found = findTarget();
-          if (found) {
-            guideToElement(found);
-            return;
-          }
+  // Find all interactive elements currently visible in viewport
+  function getVisibleTargets() {
+    const results = [];
+    for (const t of TARGETS) {
+      // Use querySelectorAll to get ALL matching elements
+      const elements = document.querySelectorAll(t.selector);
+      elements.forEach((el, idx) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top > 20 && rect.bottom < window.innerHeight - 20 &&
+            rect.left > 0 && rect.right < window.innerWidth) {
+          // Skip filled form fields
+          if (t.emptyOnly && el.value && el.value.trim() !== '') return;
+          results.push({ ...t, el, rect, uniqueKey: `${t.selector}-${idx}` });
         }
+      });
+    }
+    return results.sort((a, b) => a.priority - b.priority);
+  }
 
-        // Random playful gestures
-        if (roll < 0.15 && elapsed > 6000) {
-          // Hide & peek
-          doHideAndPeek();
-        } else if (roll < 0.25 && elapsed > 5000) {
-          // Twirl
-          setPose('twirl');
-          addTimer(() => { setPose('idle'); }, 1500);
-          lastInteraction.current = Date.now();
-        } else if (roll < 0.35 && elapsed > 7000) {
-          // Giggle
-          setPose('giggle');
-          addTimer(() => { setPose('idle'); }, 2000);
-          lastInteraction.current = Date.now();
-        }
+  // Fly to an element and perform action
+  function flyToElement({ el, rect, action, selector, bounce, uniqueKey }) {
+    mood.current = 'guiding';
+    setPose('fly');
+    currentTargetSelector.current = uniqueKey || selector;
+    lastActionTime.current = Date.now();
+
+    // Position close to element — wand tip nearly touches it
+    // Fairy is on LEFT, wand extends right toward element
+    const fairyX = rect.left - 20;
+    const fairyY = rect.top + rect.height / 2 - 10;
+    target.current = { x: Math.max(15, fairyX), y: Math.max(15, fairyY) };
+    setFlipped(false);
+
+    // Arrive → act (snappy)
+    addTimer(() => {
+      mood.current = 'acting';
+      setPose(action);
+
+      // Bounce the target element (not the heart seal)
+      if (bounce && el) {
+        el.classList.add('fairy-tapped');
+        addTimer(() => el.classList.remove('fairy-tapped'), 600);
       }
+    }, 500);
+
+    // Release — move to next element quickly
+    addTimer(() => {
+      mood.current = 'idle';
+      setPose('idle');
+      target.current = {
+        x: pos.current.x + 30,
+        y: pos.current.y - 25,
+      };
     }, 2000);
-    return () => clearInterval(interval);
-  }, [addTimer]);
+  }
 
-  // Hide behind edge, peek, then come back
+  // Random playful gestures
+  function doPlayfulGesture() {
+    const roll = Math.random();
+    lastActionTime.current = Date.now();
+
+    if (roll < 0.2) {
+      // Hide and peek
+      doHideAndPeek();
+    } else if (roll < 0.4) {
+      // Twirl / spin
+      setPose('twirl');
+      addTimer(() => { mood.current = 'idle'; setPose('idle'); }, 1200);
+    } else if (roll < 0.6) {
+      // Giggle
+      setPose('giggle');
+      addTimer(() => { mood.current = 'idle'; setPose('idle'); }, 1500);
+    } else if (roll < 0.8) {
+      // Wave
+      setPose('wave');
+      addTimer(() => { mood.current = 'idle'; setPose('idle'); }, 1200);
+    } else {
+      // Spin (same as twirl but faster)
+      setPose('twirl');
+      addTimer(() => { mood.current = 'idle'; setPose('idle'); }, 800);
+    }
+  }
+
+  // Hide behind edge, peek, come back
   function doHideAndPeek() {
     mood.current = 'hiding';
     setPose('fly');
-    // Fly to nearest edge
     const goLeft = pos.current.x < window.innerWidth / 2;
     target.current = { x: goLeft ? -10 : window.innerWidth + 10, y: pos.current.y };
 
     addTimer(() => {
-      // Peek
       mood.current = 'peeking';
       setPose('peek');
-      target.current = { x: goLeft ? 15 : window.innerWidth - 15, y: pos.current.y };
+      target.current = { x: goLeft ? 18 : window.innerWidth - 18, y: pos.current.y };
     }, 1200);
 
     addTimer(() => {
-      // Come back
       mood.current = 'fly';
       setPose('fly');
-      target.current = { x: window.innerWidth * 0.6, y: window.innerHeight * 0.3 };
-    }, 3000);
+      target.current = { x: window.innerWidth * 0.5, y: window.innerHeight * 0.3 };
+    }, 3200);
 
     addTimer(() => {
       mood.current = 'idle';
       setPose('idle');
     }, 4500);
-
-    lastInteraction.current = Date.now();
   }
 
-  // Find visible interactive element
-  function findTarget() {
-    for (const t of GUIDE_TARGETS) {
-      const el = document.querySelector(t.selector);
-      if (!el) continue;
-      const rect = el.getBoundingClientRect();
-      if (rect.top > 30 && rect.bottom < window.innerHeight - 30) {
-        return { el, rect, action: t.action };
-      }
-    }
-    return null;
-  }
-
-  // Guide to element — position on LEFT side so wand points right at it
-  function guideToElement({ el, rect, action }) {
-    mood.current = 'guiding';
-    setPose('fly');
-    lastAction.current = Date.now();
-
-    // Position fairy to the LEFT of the element so wand (right hand) points at it
-    const fairyX = rect.left - 40;
-    const fairyY = rect.top + rect.height / 2 - 20;
-    target.current = { x: fairyX, y: fairyY };
-    setFlipped(false); // face right toward element
-
-    // Arrive and perform action
-    addTimer(() => {
-      mood.current = 'acting';
-      setPose(action);
-    }, 1200);
-
-    // Release — always free up after action
-    addTimer(() => {
-      mood.current = 'idle';
-      setPose('idle');
-      target.current = { x: pos.current.x + 50, y: pos.current.y - 40 };
-    }, 4500);
-  }
-
-  // === ANIMATION LOOP ===
+  // === ANIMATION LOOP — spring physics ===
   useEffect(() => {
     const animate = () => {
       const p = pos.current;
@@ -237,29 +274,32 @@ export default function Fairy() {
       const v = vel.current;
       const m = mood.current;
 
-      let tx = t.x + (m === 'fly' ? 30 : 0);
-      let ty = t.y + (m === 'fly' ? -25 : 0);
+      let tx = t.x;
+      let ty = t.y;
 
+      // Idle: gentle autonomous drift
       if (m === 'idle') {
-        const time = Date.now() * 0.0005;
+        const time = Date.now() * 0.0004;
         tx = p.x + Math.sin(time) * 0.1;
-        ty = p.y + Math.cos(time * 0.7) * 0.1;
+        ty = p.y + Math.cos(time * 0.6) * 0.1;
       }
 
+      // Acting: small hover near target
       if (m === 'acting') {
         const time = Date.now() * 0.003;
         tx = t.x + Math.sin(time) * 3;
         ty = t.y + Math.cos(time) * 2;
       }
 
-      // Clamp (allow slightly off-screen for peek)
+      // Clamp to viewport (except when hiding/peeking)
       if (m !== 'peeking' && m !== 'hiding' && m !== 'hidden') {
-        tx = Math.max(10, Math.min(window.innerWidth - 10, tx));
-        ty = Math.max(10, Math.min(window.innerHeight - 10, ty));
+        tx = Math.max(15, Math.min(window.innerWidth - 15, tx));
+        ty = Math.max(15, Math.min(window.innerHeight - 15, ty));
       }
 
-      const stiffness = (m === 'fly' || m === 'guiding') ? 0.05 : m === 'hiding' ? 0.06 : 0.012;
-      const damping = 0.83;
+      // Spring — snappy when guiding
+      const stiffness = (m === 'guiding') ? 0.12 : (m === 'fly' || m === 'hiding') ? 0.07 : 0.012;
+      const damping = 0.78;
       v.x += (tx - p.x) * stiffness;
       v.y += (ty - p.y) * stiffness;
       v.x *= damping;
@@ -267,7 +307,13 @@ export default function Fairy() {
       p.x += v.x;
       p.y += v.y;
 
-      // Flip based on velocity (but not during guiding/acting — we set it manually)
+      // Keep on screen (soft clamp)
+      if (m !== 'hiding' && m !== 'peeking') {
+        p.x = Math.max(5, Math.min(window.innerWidth - 5, p.x));
+        p.y = Math.max(5, Math.min(window.innerHeight - 5, p.y));
+      }
+
+      // Flip based on velocity (not during acting/guiding)
       if (m !== 'acting' && m !== 'guiding' && Math.abs(v.x) > 0.3) {
         setFlipped(v.x < 0);
       }
