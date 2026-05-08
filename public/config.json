@@ -32,17 +32,17 @@
     }
   ],
   "story": [
-    { "year": 2016, "text": "First met in college, first year", "image": "/images/2016.png", "speed": "fast" },
+    { "year": 2016, "text": "First met in college. A silly link revealed what we both felt.", "image": "/images/2016.png", "speed": "fast" },
     { "year": 2017, "text": "Campus life, chai breaks, inside jokes", "image": "/images/2017.png", "speed": "fast" },
     { "year": 2018, "text": "Late night calls that never ended", "image": "/images/2018.png", "speed": "fast" },
     { "year": 2019, "text": "Campus placements. Both got offers.", "image": "/images/2019.png", "speed": "fast" },
     { "year": 2020, "text": "Graduated. New chapter. Same city. Same us.", "image": "/images/2020.png", "speed": "medium" },
-    { "year": 2021, "text": "Through thick and thin, always us", "image": "https://images.unsplash.com/photo-1522098543979-ffc7f79a56c4?w=1200&h=800&fit=crop", "speed": "medium" },
-    { "year": 2022, "text": "Building a life, one day at a time", "image": "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=1200&h=800&fit=crop", "speed": "medium" },
-    { "year": 2023, "text": "Everything started falling into place", "image": "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?w=1200&h=800&fit=crop", "speed": "slow" },
-    { "year": 2024, "text": "We just knew", "image": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&h=800&fit=crop", "speed": "slow" },
-    { "year": 2025, "text": "Families met. Blessings poured in.", "image": "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=1200&h=800&fit=crop", "speed": "slower" },
-    { "year": 2026, "text": "And here we are", "image": "https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop", "speed": "slowest" }
+    { "year": 2021, "text": "Through thick and thin, always us", "image": "/images/2021.png", "speed": "medium" },
+    { "year": 2022, "text": "Building a life, one day at a time", "image": "/images/2022.png", "speed": "medium" },
+    { "year": 2023, "text": "Everything started falling into place", "image": "/images/2023.png", "speed": "slow" },
+    { "year": 2024, "text": "We told them. What followed tested everything we had.", "image": "/images/2024.png", "speed": "slow" },
+    { "year": 2025, "text": "They came around. Love won.", "image": "/images/2025.png", "speed": "slower" },
+    { "year": 2026, "text": "And here we are — together, finally.", "image": "/images/2026.png", "speed": "slowest" }
   ],
   "gallery": [
     { "src": "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop", "alt": "Photo 1" },
