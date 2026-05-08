@@ -17,18 +17,25 @@ export default function StoryReveal() {
     timersRef.current.push(id);
   };
 
+  const [showSeal, setShowSeal] = useState(true);
+
   const openCurtain = useCallback(() => {
     setMounted(true);
     setOverlayVisible(true);
+    setShowSeal(true);
     document.body.style.overflow = 'hidden';
-    addTimer(() => setCurtainsOpen(true), 80);
+    addTimer(() => {
+      setCurtainsOpen(true);
+      setShowSeal(false);
+    }, 80);
     // contentVisible set by ClothCurtain onOpenComplete
   }, []);
 
   const closeCurtain = useCallback(() => {
     setContentVisible(false);
-    // Start closing curtain immediately — no delay
     setCurtainsOpen(false);
+    // Show seal only after curtain has started closing (avoids delay on mobile)
+    addTimer(() => setShowSeal(true), 300);
     // Wait for cloth to close then flash and unmount
     addTimer(() => {
       setOverlayVisible(false);
@@ -78,7 +85,7 @@ export default function StoryReveal() {
           </div>
 
           {/* Heart wax seal at center */}
-          <div className={`curtain-seal ${curtainsOpen ? 'curtain-seal-hidden' : ''}`}>
+          <div className={`curtain-seal ${!showSeal ? 'curtain-seal-hidden' : ''}`}>
             <WaxSeal text="S & P" size={120} />
           </div>
 
