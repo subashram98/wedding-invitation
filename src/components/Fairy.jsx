@@ -113,10 +113,9 @@ export default function Fairy() {
       const scrollDelta = window.scrollY - lastScrollY;
       lastScrollY = window.scrollY;
 
-      // Only suppress bubble during fast scrolling (not priority bubbles)
-      const isFastScroll = Math.abs(scrollDelta) > 15;
-      isScrolling.current = isFastScroll;
-      if (isFastScroll && !bubblePriorityRef.current) {
+      // Hide non-priority bubble on any scroll
+      isScrolling.current = Math.abs(scrollDelta) > 15;
+      if (Math.abs(scrollDelta) > 2 && !bubblePriorityRef.current) {
         setBubbleVisible(false);
       }
 
