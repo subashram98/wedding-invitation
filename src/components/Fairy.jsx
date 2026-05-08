@@ -15,7 +15,7 @@ import FairyCharacter from './FairyCharacter';
  */
 
 const TARGETS = [
-  { selector: '.wax-seal-btn', action: 'cast', priority: 1, bounce: false, bubble: 'Tap here, lovely ✨' },
+  { selector: '.wax-seal-btn', action: 'cast', priority: 1, bounce: false, bubble: 'Psst... tap here! ✨' },
   { selector: '.hero-cta', action: 'tap', priority: 6, bounce: true, bubble: null },
   { selector: '.directions-btn', action: 'tap', priority: 2, bounce: true, bubble: 'Need directions? ✨' },
   { selector: '#rsvp-name', action: 'point', priority: 3, bounce: true, emptyOnly: true, bubble: "Who's coming? ✨" },
@@ -36,6 +36,7 @@ export default function Fairy() {
 
   const [pose, setPose] = useState('peek');
   const [flipped, setFlipped] = useState(false);
+  const isScrolling = useRef(false);
 
   const addTimer = useCallback((fn, ms) => {
     const id = setTimeout(fn, ms);
@@ -112,6 +113,13 @@ export default function Fairy() {
       const scrollDelta = window.scrollY - lastScrollY;
       lastScrollY = window.scrollY;
 
+      // Only suppress bubble during fast scrolling (not priority bubbles)
+      const isFastScroll = Math.abs(scrollDelta) > 15;
+      isScrolling.current = isFastScroll;
+      if (isFastScroll && !bubblePriorityRef.current) {
+        setBubbleVisible(false);
+      }
+
       // During scroll: fairy drifts in scroll direction (stays in viewport)
       if (mood.current === 'idle' || mood.current === 'fly') {
         // Nudge fairy position to follow scroll naturally
@@ -139,6 +147,7 @@ export default function Fairy() {
       scrollTimeout = setTimeout(() => {
         mood.current = 'idle';
         setPose('idle');
+        isScrolling.current = false;
 
         // Guide right away
         if (Date.now() - lastActionTime.current > 2000) {
@@ -196,8 +205,8 @@ export default function Fairy() {
       mood.current = 'acting';
       setPose(action);
 
-      // Show contextual bubble text
-      if (bubble) {
+      // Show contextual bubble text (only if not scrolling and no priority bubble active)
+      if (bubble && !isScrolling.current && !bubblePriorityRef.current) {
         setBubbleText(bubble);
         setBubbleClickAction(null);
         setBubbleVisible(true);
@@ -339,8 +348,9 @@ export default function Fairy() {
 
   // Show speech bubble when casting at the seal — stays for at least 2s
   const [bubbleVisible, setBubbleVisible] = useState(false);
-  const [bubbleText, setBubbleText] = useState('Tap here, lovely ✨');
+  const [bubbleText, setBubbleText] = useState('Psst... tap here! ✨');
   const [bubbleClickAction, setBubbleClickAction] = useState(null);
+  const bubblePriorityRef = useRef(false);
   const bubbleTimer = useRef(null);
   const rsvpReminded = useRef(false);
   const rsvpSeen = useRef(false);
@@ -365,13 +375,18 @@ export default function Fairy() {
       // Override any current bubble — RSVP reminder takes priority
       clearTimeout(bubbleTimer.current);
       setBubbleText("Hey lovely, don't forget to RSVP! ✨");
+      bubblePriorityRef.current = true;
       setBubbleClickAction(() => () => {
         const rsvp = document.getElementById('rsvp');
         if (rsvp) rsvp.scrollIntoView({ behavior: 'smooth' });
         setBubbleVisible(false);
+        bubblePriorityRef.current = false;
       });
       setBubbleVisible(true);
-      bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 15000);
+      bubbleTimer.current = setTimeout(() => {
+        setBubbleVisible(false);
+        bubblePriorityRef.current = false;
+      }, 15000);
     };
 
     // Trigger 1: They saw RSVP section and scrolled away
@@ -384,8 +399,10 @@ export default function Fairy() {
       if (inView) {
         rsvpSeen.current = true;
       } else if (rsvpSeen.current && !rsvpReminded.current) {
-        // They saw it and scrolled away
-        showRsvpReminder();
+        // They saw it and scrolled away — remind after scroll settles
+        setTimeout(() => {
+          if (!rsvpReminded.current) showRsvpReminder();
+        }, 1000);
       }
     };
 

@@ -27,7 +27,7 @@ export default function MusicPlayer() {
           audio.pause();
           audio.currentTime = 0;
           setPlaying(false);
-        }, 15000);
+        }, 30000);
       }).catch(() => {});
     };
 
@@ -54,7 +54,7 @@ export default function MusicPlayer() {
 
   return (
     <>
-      <audio ref={audioRef} loop preload="auto" src="/music2.mp3" />
+      <audio ref={audioRef} preload="auto" src="/music2.mp3" />
       <div className="music-player">
         <button
           className={`music-btn ${playing ? 'playing' : ''}`}
