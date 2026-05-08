@@ -359,7 +359,7 @@ export default function Fairy() {
       if (thankYou) return;
 
       rsvpReminded.current = true;
-      setBubbleText("Don't forget to RSVP! ✨");
+      setBubbleText("Hey lovely, don't forget to RSVP! ✨");
       setBubbleClickAction(() => () => {
         const rsvp = document.getElementById('rsvp');
         if (rsvp) rsvp.scrollIntoView({ behavior: 'smooth' });
@@ -367,7 +367,7 @@ export default function Fairy() {
       });
       setBubbleVisible(true);
       clearTimeout(bubbleTimer.current);
-      bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 5000);
+      bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 15000);
     };
 
     // Trigger 1: They saw RSVP section and scrolled away
@@ -387,12 +387,12 @@ export default function Fairy() {
 
     window.addEventListener('scroll', scrollHandler, { passive: true });
 
-    // Trigger 2: Never scrolled to RSVP — remind after 20s
+    // Trigger 2: Never scrolled to RSVP — remind after 5s
     rsvpTimer = setTimeout(() => {
       if (!rsvpSeen.current && !rsvpReminded.current) {
         showRsvpReminder();
       }
-    }, 20000);
+    }, 5000);
 
     return () => {
       window.removeEventListener('scroll', scrollHandler);
