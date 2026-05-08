@@ -408,12 +408,13 @@ export default function Fairy() {
 
     window.addEventListener('scroll', scrollHandler, { passive: true });
 
-    // Trigger 2: Never scrolled to RSVP — remind after 8s (after entrance finishes)
+    // Trigger 2: Never scrolled to RSVP — remind after 30s of page time
+    // (gives user time to explore before nagging)
     rsvpTimer = setTimeout(() => {
       if (!rsvpSeen.current && !rsvpReminded.current) {
         showRsvpReminder();
       }
-    }, 8000);
+    }, 30000);
 
     return () => {
       window.removeEventListener('scroll', scrollHandler);
