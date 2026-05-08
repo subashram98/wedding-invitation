@@ -330,22 +330,85 @@ export default function Fairy() {
 
   // Show speech bubble when casting at the seal — stays for at least 2s
   const [bubbleVisible, setBubbleVisible] = useState(false);
+  const [bubbleText, setBubbleText] = useState('Tap here, lovely ✨');
+  const [bubbleClickAction, setBubbleClickAction] = useState(null);
   const bubbleTimer = useRef(null);
+  const rsvpReminded = useRef(false);
+  const rsvpSeen = useRef(false);
 
   useEffect(() => {
     const isAtSeal = pose === 'cast' && currentTargetSelector.current?.includes('.wax-seal-btn');
     if (isAtSeal && !bubbleVisible) {
+      setBubbleText('Tap here, lovely ✨');
+      setBubbleClickAction(null);
       setBubbleVisible(true);
       clearTimeout(bubbleTimer.current);
       bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 2500);
     }
   }, [pose]);
 
+  // === RSVP Reminder ===
+  useEffect(() => {
+    let rsvpTimer;
+    let scrollHandler;
+
+    const showRsvpReminder = () => {
+      if (rsvpReminded.current) return;
+      // Check if form was submitted (the thank you message would be visible)
+      const thankYou = document.querySelector('.rsvp-thanks');
+      if (thankYou) return;
+
+      rsvpReminded.current = true;
+      setBubbleText("Don't forget to RSVP! ✨");
+      setBubbleClickAction(() => () => {
+        const rsvp = document.getElementById('rsvp');
+        if (rsvp) rsvp.scrollIntoView({ behavior: 'smooth' });
+        setBubbleVisible(false);
+      });
+      setBubbleVisible(true);
+      clearTimeout(bubbleTimer.current);
+      bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 5000);
+    };
+
+    // Trigger 1: They saw RSVP section and scrolled away
+    scrollHandler = () => {
+      const rsvp = document.getElementById('rsvp');
+      if (!rsvp) return;
+      const rect = rsvp.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+      if (inView) {
+        rsvpSeen.current = true;
+      } else if (rsvpSeen.current && !rsvpReminded.current) {
+        // They saw it and scrolled away
+        showRsvpReminder();
+      }
+    };
+
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+
+    // Trigger 2: Never scrolled to RSVP — remind after 20s
+    rsvpTimer = setTimeout(() => {
+      if (!rsvpSeen.current && !rsvpReminded.current) {
+        showRsvpReminder();
+      }
+    }, 20000);
+
+    return () => {
+      window.removeEventListener('scroll', scrollHandler);
+      clearTimeout(rsvpTimer);
+    };
+  }, []);
+
   return (
     <div ref={containerRef} className={`fairy-companion ${flipped ? 'fairy-flipped' : ''}`} aria-hidden="true">
       {bubbleVisible && (
-        <div className="fairy-speech-bubble">
-          Tap here, lovely ✨
+        <div
+          className={`fairy-speech-bubble ${bubbleClickAction ? 'fairy-bubble-clickable' : ''}`}
+          onClick={bubbleClickAction || undefined}
+          style={bubbleClickAction ? { pointerEvents: 'auto', cursor: 'pointer' } : undefined}
+        >
+          {bubbleText}
         </div>
       )}
       <FairyCharacter pose={pose} size={55} />
