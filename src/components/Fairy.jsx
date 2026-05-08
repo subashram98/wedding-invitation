@@ -15,12 +15,12 @@ import FairyCharacter from './FairyCharacter';
  */
 
 const TARGETS = [
-  { selector: '.wax-seal-btn', action: 'cast', priority: 1, bounce: false },
-  { selector: '.hero-cta', action: 'tap', priority: 6, bounce: true },
-  { selector: '.directions-btn', action: 'tap', priority: 2, bounce: true },
-  { selector: '#rsvp-name', action: 'point', priority: 3, bounce: true, emptyOnly: true },
-  { selector: '#rsvp-message', action: 'point', priority: 4, bounce: true, emptyOnly: true },
-  { selector: '.rsvp-submit', action: 'tap', priority: 5, bounce: true },
+  { selector: '.wax-seal-btn', action: 'cast', priority: 1, bounce: false, bubble: 'Tap here, lovely ✨' },
+  { selector: '.hero-cta', action: 'tap', priority: 6, bounce: true, bubble: null },
+  { selector: '.directions-btn', action: 'tap', priority: 2, bounce: true, bubble: 'Need directions? ✨' },
+  { selector: '#rsvp-name', action: 'point', priority: 3, bounce: true, emptyOnly: true, bubble: "Who's coming? ✨" },
+  { selector: '#rsvp-message', action: 'point', priority: 4, bounce: true, emptyOnly: true, bubble: 'Leave a wish! ✨' },
+  { selector: '.rsvp-submit', action: 'tap', priority: 5, bounce: true, bubble: "Don't forget to RSVP! ✨" },
 ];
 
 export default function Fairy() {
@@ -178,7 +178,7 @@ export default function Fairy() {
   }
 
   // Fly to an element and perform action
-  function flyToElement({ el, rect, action, selector, bounce, uniqueKey }) {
+  function flyToElement({ el, rect, action, selector, bounce, uniqueKey, bubble }) {
     mood.current = 'guiding';
     setPose('fly');
     currentTargetSelector.current = uniqueKey || selector;
@@ -195,6 +195,15 @@ export default function Fairy() {
     addTimer(() => {
       mood.current = 'acting';
       setPose(action);
+
+      // Show contextual bubble text
+      if (bubble) {
+        setBubbleText(bubble);
+        setBubbleClickAction(null);
+        setBubbleVisible(true);
+        clearTimeout(bubbleTimer.current);
+        bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 2500);
+      }
 
       // Bounce the target element (not the heart seal)
       if (bounce && el) {
@@ -337,14 +346,8 @@ export default function Fairy() {
   const rsvpSeen = useRef(false);
 
   useEffect(() => {
-    const isAtSeal = pose === 'cast' && currentTargetSelector.current?.includes('.wax-seal-btn');
-    if (isAtSeal && !bubbleVisible) {
-      setBubbleText('Tap here, lovely ✨');
-      setBubbleClickAction(null);
-      setBubbleVisible(true);
-      clearTimeout(bubbleTimer.current);
-      bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 2500);
-    }
+    // Seal bubble is now handled by flyToElement via target.bubble
+    // This effect is kept only for edge cases where pose changes independently
   }, [pose]);
 
   // === RSVP Reminder ===
@@ -354,11 +357,13 @@ export default function Fairy() {
 
     const showRsvpReminder = () => {
       if (rsvpReminded.current) return;
-      // Check if form was submitted (the thank you message would be visible)
+      // Check if form was submitted
       const thankYou = document.querySelector('.rsvp-thanks');
       if (thankYou) return;
 
       rsvpReminded.current = true;
+      // Override any current bubble — RSVP reminder takes priority
+      clearTimeout(bubbleTimer.current);
       setBubbleText("Hey lovely, don't forget to RSVP! ✨");
       setBubbleClickAction(() => () => {
         const rsvp = document.getElementById('rsvp');
@@ -366,7 +371,6 @@ export default function Fairy() {
         setBubbleVisible(false);
       });
       setBubbleVisible(true);
-      clearTimeout(bubbleTimer.current);
       bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 15000);
     };
 
@@ -387,12 +391,12 @@ export default function Fairy() {
 
     window.addEventListener('scroll', scrollHandler, { passive: true });
 
-    // Trigger 2: Never scrolled to RSVP — remind after 5s
+    // Trigger 2: Never scrolled to RSVP — remind after 8s (after entrance finishes)
     rsvpTimer = setTimeout(() => {
       if (!rsvpSeen.current && !rsvpReminded.current) {
         showRsvpReminder();
       }
-    }, 5000);
+    }, 8000);
 
     return () => {
       window.removeEventListener('scroll', scrollHandler);
