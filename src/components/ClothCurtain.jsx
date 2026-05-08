@@ -107,10 +107,10 @@ function renderPanel(ctx, panel) {
       const blue = Math.min(20, Math.max(8, 14 + shade * 0.2));
 
       ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.lineTo(p3.x, p3.y);
-      ctx.lineTo(p4.x, p4.y);
+      ctx.moveTo(p1.x - 0.5, p1.y - 0.5);
+      ctx.lineTo(p2.x + 0.5, p2.y - 0.5);
+      ctx.lineTo(p3.x + 0.5, p3.y + 0.5);
+      ctx.lineTo(p4.x - 0.5, p4.y + 0.5);
       ctx.closePath();
       ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
       ctx.fill();

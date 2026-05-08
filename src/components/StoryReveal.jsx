@@ -27,7 +27,8 @@ export default function StoryReveal() {
 
   const closeCurtain = useCallback(() => {
     setContentVisible(false);
-    addTimer(() => setCurtainsOpen(false), 150);
+    // Start closing curtain immediately — no delay
+    setCurtainsOpen(false);
     // Wait for cloth to close then flash and unmount
     addTimer(() => {
       setOverlayVisible(false);
