@@ -328,8 +328,16 @@ export default function Fairy() {
     return () => cancelAnimationFrame(frame.current);
   }, []);
 
+  // Show speech bubble when casting at the seal
+  const showBubble = pose === 'cast' && currentTargetSelector.current?.includes('.wax-seal-btn');
+
   return (
     <div ref={containerRef} className={`fairy-companion ${flipped ? 'fairy-flipped' : ''}`} aria-hidden="true">
+      {showBubble && (
+        <div className="fairy-speech-bubble">
+          Tap here, lovely ✨
+        </div>
+      )}
       <FairyCharacter pose={pose} size={55} />
       <div className="fairy-sparkle-trail">
         <span className="fairy-sp sp1">✦</span>
