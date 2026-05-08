@@ -328,12 +328,22 @@ export default function Fairy() {
     return () => cancelAnimationFrame(frame.current);
   }, []);
 
-  // Show speech bubble when casting at the seal
-  const showBubble = pose === 'cast' && currentTargetSelector.current?.includes('.wax-seal-btn');
+  // Show speech bubble when casting at the seal — stays for at least 2s
+  const [bubbleVisible, setBubbleVisible] = useState(false);
+  const bubbleTimer = useRef(null);
+
+  useEffect(() => {
+    const isAtSeal = pose === 'cast' && currentTargetSelector.current?.includes('.wax-seal-btn');
+    if (isAtSeal && !bubbleVisible) {
+      setBubbleVisible(true);
+      clearTimeout(bubbleTimer.current);
+      bubbleTimer.current = setTimeout(() => setBubbleVisible(false), 2500);
+    }
+  }, [pose]);
 
   return (
     <div ref={containerRef} className={`fairy-companion ${flipped ? 'fairy-flipped' : ''}`} aria-hidden="true">
-      {showBubble && (
+      {bubbleVisible && (
         <div className="fairy-speech-bubble">
           Tap here, lovely ✨
         </div>

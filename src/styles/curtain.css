@@ -318,3 +318,19 @@
   color: var(--color-white);
   transform: rotate(90deg);
 }
+
+/* Flash burst after curtain closes */
+.curtain-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: radial-gradient(circle at 50% 50%, rgba(212,168,67,0.4) 0%, rgba(255,255,255,0.2) 30%, transparent 70%);
+  pointer-events: none;
+  animation: flashBurst 0.6s ease-out forwards;
+}
+
+@keyframes flashBurst {
+  0% { opacity: 1; transform: scale(0.8); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(1.5); }
+}

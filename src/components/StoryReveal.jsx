@@ -1,12 +1,14 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import OurStory from './OurStory';
 import WaxSeal from './WaxSeal';
+import ClothCurtain from './ClothCurtain';
 
 export default function StoryReveal() {
   const [mounted, setMounted] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [curtainsOpen, setCurtainsOpen] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
   const overlayRef = useRef(null);
   const timersRef = useRef([]);
 
@@ -19,21 +21,21 @@ export default function StoryReveal() {
     setMounted(true);
     setOverlayVisible(true);
     document.body.style.overflow = 'hidden';
-    // Tiny delay for DOM to render closed state
-    addTimer(() => setCurtainsOpen(true), 50);
-    // Enable interaction after transition completes (2.8s + 50ms)
-    addTimer(() => setContentVisible(true), 2900);
+    addTimer(() => setCurtainsOpen(true), 80);
+    // contentVisible set by ClothCurtain onOpenComplete
   }, []);
 
   const closeCurtain = useCallback(() => {
     setContentVisible(false);
     addTimer(() => setCurtainsOpen(false), 150);
-    // Unmount after transition (2.8s + buffer)
+    // Wait for cloth to close then flash and unmount
     addTimer(() => {
       setOverlayVisible(false);
       setMounted(false);
+      setShowFlash(true);
       document.body.style.overflow = '';
-    }, 3100);
+      addTimer(() => setShowFlash(false), 600);
+    }, 5500);
   }, []);
 
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function StoryReveal() {
           ref={overlayRef}
           className={`curtain-overlay ${curtainsOpen ? 'is-open' : ''}`}
         >
-          {/* Story visible behind curtains as they part */}
+          {/* Story visible behind curtains */}
           <div className={`curtain-content ${contentVisible ? 'is-visible' : ''}`}>
             <button className="curtain-close-btn" onClick={closeCurtain} aria-label="Close story">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -74,20 +76,17 @@ export default function StoryReveal() {
             {mounted && <OurStory scrollContainer={overlayRef} />}
           </div>
 
-          {/* Heart wax seal at center seam */}
+          {/* Heart wax seal at center */}
           <div className={`curtain-seal ${curtainsOpen ? 'curtain-seal-hidden' : ''}`}>
             <WaxSeal text="S & P" size={120} />
           </div>
 
-          {/* Curtain panels */}
-          <div className="curtain-panel curtain-left">
-            <div className="curtain-fabric"></div>
-          </div>
-          <div className="curtain-panel curtain-right">
-            <div className="curtain-fabric"></div>
-          </div>
+          {/* Canvas cloth curtain */}
+          <ClothCurtain isOpen={curtainsOpen} onOpenComplete={() => setContentVisible(true)} />
         </div>
       )}
+
+      {showFlash && <div className="curtain-flash" />}
     </>
   );
 }
