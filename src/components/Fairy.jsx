@@ -374,7 +374,7 @@ export default function Fairy() {
       rsvpReminded.current = true;
       // Override any current bubble — RSVP reminder takes priority
       clearTimeout(bubbleTimer.current);
-      setBubbleText("Hey lovely, don't forget to RSVP! ✨");
+      setBubbleText("Oops, did you forget to RSVP? ✨");
       bubblePriorityRef.current = true;
       setBubbleClickAction(() => () => {
         const rsvp = document.getElementById('rsvp');
