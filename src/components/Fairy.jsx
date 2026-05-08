@@ -193,7 +193,6 @@ export default function Fairy() {
     lastActionTime.current = Date.now();
 
     // Position close to element — wand tip nearly touches it
-    // Fairy is on LEFT, wand extends right toward element
     const fairyX = rect.left - 20;
     const fairyY = rect.top + rect.height / 2 - 10;
     target.current = { x: Math.max(15, fairyX), y: Math.max(15, fairyY) };
@@ -314,7 +313,7 @@ export default function Fairy() {
         ty = Math.max(15, Math.min(window.innerHeight - 15, ty));
       }
 
-      // Spring — snappy when guiding
+      // Spring physics
       const stiffness = (m === 'guiding') ? 0.12 : (m === 'fly' || m === 'hiding') ? 0.07 : 0.012;
       const damping = 0.78;
       v.x += (tx - p.x) * stiffness;
@@ -373,7 +372,7 @@ export default function Fairy() {
       rsvpReminded.current = true;
       // Override any current bubble — RSVP reminder takes priority
       clearTimeout(bubbleTimer.current);
-      setBubbleText("Oops, did you forget to RSVP? ✨");
+      setBubbleText("Oops, did you forget to RSVP? 💌");
       bubblePriorityRef.current = true;
       setBubbleClickAction(() => () => {
         const rsvp = document.getElementById('rsvp');
