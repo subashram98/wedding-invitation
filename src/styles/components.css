@@ -205,3 +205,36 @@
   100% { transform: scale(0); opacity: 0; }
 }
 
+
+/* ===== Sticky RSVP Button ===== */
+.sticky-rsvp-btn {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 100;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 1.5px;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 50px;
+  background: rgba(10, 10, 26, 0.9);
+  color: var(--color-gold);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  animation: stickyFadeIn 0.4s ease-out;
+}
+
+.sticky-rsvp-btn:hover {
+  background: rgba(184, 134, 11, 0.15);
+  border-color: var(--color-gold-light);
+  color: var(--color-white);
+  box-shadow: 0 0 20px var(--color-gold-glow);
+  transform: translateY(-2px);
+}
+
+@keyframes stickyFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,77 @@
+/* ===== Loading Screen ===== */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: var(--color-bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.loading-fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-content {
+  text-align: center;
+  animation: loadingFadeIn 1s ease-out;
+}
+
+.loading-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-gold-light);
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.loading-names {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 400;
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 2rem;
+}
+
+.loading-amp {
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-style: italic;
+  color: var(--color-gold-light);
+}
+
+/* Three dot spinner */
+.loading-spinner {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.loading-spinner span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  animation: loadingDot 1.2s ease-in-out infinite;
+}
+
+.loading-spinner span:nth-child(2) { animation-delay: 0.2s; }
+.loading-spinner span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes loadingDot {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes loadingFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -162,7 +162,7 @@ export default function ClothCurtain({ isOpen, onOpenComplete }) {
 
       // Opening
       if (isOpen && openProgress.current < 1) {
-        openProgress.current = Math.min(1, openProgress.current + 0.003);
+        openProgress.current = Math.min(1, openProgress.current + 0.005);
         const eased = 1 - Math.pow(1 - openProgress.current, 3);
 
         for (let c = 0; c < lp.cols; c++) {
@@ -182,7 +182,7 @@ export default function ClothCurtain({ isOpen, onOpenComplete }) {
 
       // Closing
       if (!isOpen && openProgress.current > 0) {
-        openProgress.current = Math.max(0, openProgress.current - 0.004);
+        openProgress.current = Math.max(0, openProgress.current - 0.007);
         const eased = 1 - Math.pow(1 - openProgress.current, 3);
 
         for (let c = 0; c < lp.cols; c++) {

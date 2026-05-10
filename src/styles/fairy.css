@@ -284,6 +284,17 @@
   opacity: 0;
 }
 
+/* Trail sparkles left behind when flying */
+.fairy-trail-sparkle {
+  color: var(--color-gold-light);
+  font-size: 10px;
+  z-index: 8999;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* Balloon wobble — kept for potential future use */
+
 /* ===== POSE: Wave — arm raised, waving ===== */
 .fairy-pose-wave .fairy-arm-l {
   transform-origin: 42px 54px;

@@ -88,3 +88,11 @@
   margin-bottom: 1.25rem;
 }
 
+
+/* Event card action buttons row */
+.event-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}

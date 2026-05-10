@@ -13,6 +13,7 @@ import './styles/components.css';
 import './styles/responsive.css';
 import './styles/curtain.css';
 import './styles/fairy.css';
+import './styles/loading.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

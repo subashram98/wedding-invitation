@@ -65,6 +65,7 @@
 .anim-visible .form-group:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
 .anim-visible .form-row { opacity: 1; transform: translateY(0); transition-delay: 0.45s; }
 .anim-visible .form-group:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.6s; }
+.anim-visible .form-group:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.75s; }
 
 .form-row {
   display: grid;

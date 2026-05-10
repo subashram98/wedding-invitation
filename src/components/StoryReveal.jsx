@@ -43,7 +43,7 @@ export default function StoryReveal() {
       setShowFlash(true);
       document.body.style.overflow = '';
       addTimer(() => setShowFlash(false), 600);
-    }, 5500);
+    }, 3500);
   }, []);
 
   useEffect(() => {
@@ -56,6 +56,13 @@ export default function StoryReveal() {
 
   useEffect(() => () => timersRef.current.forEach(clearTimeout), []);
 
+  const [hintVisible, setHintVisible] = useState(true);
+
+  const openCurtainWithHint = useCallback(() => {
+    setHintVisible(false);
+    openCurtain();
+  }, [openCurtain]);
+
   return (
     <>
       <section className="story-trigger-section">
@@ -63,9 +70,15 @@ export default function StoryReveal() {
           <p className="story-trigger-label">A decade of us</p>
           <h2 className="story-trigger-title">Our Story</h2>
           <p className="story-trigger-subtitle">From college corridors to forever</p>
-          <button className="wax-seal-btn" onClick={openCurtain} aria-label="Open our story">
+          <button className="wax-seal-btn" onClick={openCurtainWithHint} aria-label="Open our story">
             <WaxSeal text="S & P" size={90} className="wax-seal-bounce" />
           </button>
+          {hintVisible && (
+            <div className="seal-hint">
+              <span className="seal-hint-arrow">↑</span>
+              <span className="seal-hint-text">Tap to unveil our story</span>
+            </div>
+          )}
         </div>
       </section>
 

@@ -4,7 +4,7 @@ import AnimatedSection from './AnimatedSection';
 
 export default function RSVP() {
   const config = useConfig();
-  const [form, setForm] = useState({ name: '', guests: '1', attending: 'yes', message: '' });
+  const [form, setForm] = useState({ name: '', guests: '1', attending: 'yes', event: 'reception', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
@@ -56,7 +56,8 @@ export default function RSVP() {
       </div>
       <p className="section-label">Will You Join Us?</p>
       <h2 className="section-title">RSVP</h2>
-      <p className="rsvp-subtitle">Kindly respond by {config.wedding.rsvpDeadline}</p>
+      <p className="rsvp-subtitle">Reception — Thu, May 28, 2026 | 7 PM onwards</p>
+      <p className="rsvp-subtitle" style={{ marginTop: '-1rem', opacity: 0.6, fontSize: '0.7rem' }}>Kindly respond by {config.wedding.rsvpDeadline}</p>
       <form className="rsvp-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="rsvp-name">Your Name</label>
@@ -93,6 +94,18 @@ export default function RSVP() {
               <option value="no">Regretfully Decline</option>
             </select>
           </div>
+        </div>
+        <div className="form-group">
+          <label htmlFor="rsvp-event">Attending for</label>
+          <select
+            id="rsvp-event"
+            value={form.event}
+            onChange={(e) => setForm({ ...form, event: e.target.value })}
+          >
+            <option value="reception">Reception</option>
+            <option value="wedding">Wedding Ceremony</option>
+            <option value="both">Both — wouldn't miss either! 🎉</option>
+          </select>
         </div>
         <div className="form-group">
           <label htmlFor="rsvp-message">Message for the Couple</label>
